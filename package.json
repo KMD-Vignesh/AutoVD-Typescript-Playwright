@@ -4,13 +4,22 @@
   "description": "AutoVD framework for Typescript with Playwright",
   "main": "index.js",
   "scripts": {
-    "test" : "npx playwright test"
+    "clean:allure-results": "rimraf report/allure/allure-results",
+    "test:playwright": "npx playwright test --workers=4",
+    "copy:history": "cpx 'report/allure/allure-report/history/**/*' report/allure/allure-results/history",
+    "clean:allure-report": "rimraf report/allure/allure-report",
+    "report:allure": "npx allure generate report/allure/allure-results --output report/allure/allure-report",
+    "test": "npm run clean:allure-results && npm run test:playwright && npm run copy:history && npm run clean:allure-report && npm run report:allure"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.45.3",
-    "@types/node": "^20.14.12"
+    "@types/node": "^20.14.12",
+    "allure-commandline": "^2.13.9",
+    "allure-playwright": "^2.0.0",
+    "cpx": "^1.5.0",
+    "rimraf": "^6.0.1"
   }
 }

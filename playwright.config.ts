@@ -1,32 +1,47 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const browserMode = process.env.BROWSER_MODE || 'single';
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    ['allure-playwright', { outputFolder: 'report/allure/allure-results' }],
+    ['html', { outputFolder: 'report/playwrightreport', open: 'never' }],
+  ],
   use: {
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
+    video: 'retain-on-failure',
+    screenshot: 'only-on-failure',
     headless: false,
   },
 
   projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    ...(browserMode === 'single' ? [
+      {
+        name: 'chromium',
+        use: { ...devices['Desktop Chrome'] },
+      }
+    ] : [
+      // Multi browser mode: Chromium, Firefox, and WebKit
+      {
+        name: 'chromium',
+        use: { ...devices['Desktop Chrome'] },
+      },
+      {
+        name: 'firefox',
+        use: { ...devices['Desktop Firefox'] },
+      },
+      {
+        name: 'webkit',
+        use: { ...devices['Desktop Safari'] },
+      }
+    ]),
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
 
     /* Test against mobile viewports. */
     // {
