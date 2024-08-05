@@ -12,7 +12,7 @@ export class SauceLabPage {
   }
 
   async openApp() {
-    await this.playVD.open('https://saucedemo.com');
+    await this.playVD.goto('https://saucedemo.com');
     return this
   }
 
@@ -20,7 +20,6 @@ export class SauceLabPage {
     await this.playVD.fill(this.username_input, "standard_user")
     await this.playVD.fill(this.password_input, "secret_sauce")
     await this.playVD.click(this.login_button)
-    console.log(await this.playVD.title())
     return this
   }
 
