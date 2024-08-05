@@ -1,4 +1,4 @@
-import { type Page, BrowserContext, FrameLocator, Locator } from '@playwright/test';
+import { type Page, BrowserContext, expect, FrameLocator, Locator } from '@playwright/test';
 
 export class PlayVD {
     private page: Page;
@@ -31,6 +31,18 @@ export class PlayVD {
     
     private getLocator(selector: string): Locator {
         return this.page.locator(selector);
+    }
+
+    async isPresent(selector: string, timeout: number = 30): Promise<boolean> {
+        try {
+            expect.poll(async () => {
+                const count = await this.page.locator(selector).count();
+                return count > 0;
+            }, { timeout: timeout * 1000 });
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     // Interactions
@@ -80,7 +92,19 @@ export class PlayVD {
     }
 
     async waitForTimeout(timeout: number): Promise<this> {
-        await this.page.waitForTimeout(timeout);
+        // Ensure timeout is a positive number
+        if (timeout <= 0) {
+            throw new Error("Timeout must be a positive number");
+        }
+        
+        // Handle case when page is no longer active or the test has ended
+        try {
+            await this.page.waitForTimeout(timeout);
+        } catch (error) {
+            console.error("Error occurred during waitForTimeout:", error);
+            throw new Error("Page or test ended during waitForTimeout");
+        }
+        
         return this;
     }
 
