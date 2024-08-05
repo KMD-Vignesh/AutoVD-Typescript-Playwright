@@ -6,7 +6,7 @@ test.describe('Add Cart', () => {
     const mainPage = new MainPage(playVD);
     await mainPage.openApp();
     await mainPage.loginApp();
-    expect(await mainPage.isMainPageLoaded());
+    expect(await mainPage.isMainPageLoaded()).toBeTruthy();
     await mainPage.addProductCart("Sauce Labs Bike Light");
     await mainPage.addProductCart("Sauce Labs Backpack")
     await mainPage.addProductCart("Sauce Labs Onesie")
@@ -18,7 +18,7 @@ test.describe('Add Cart', () => {
     const mainPage = new MainPage(playVD);
     await mainPage.openApp();
     await mainPage.loginApp();
-    expect(await mainPage.isMainPageLoaded());
+    expect(await mainPage.isMainPageLoaded()).toBeTruthy();
     await mainPage.addProductCart("Sauce Labs Backpack")
     await mainPage.addProductCart("Sauce Labs Onesie")
     await mainPage.addProductCart("Sauce Labs Bike Light");
@@ -32,7 +32,7 @@ test.describe('Remove Cart', () => {
     const mainPage = new MainPage(playVD);
     await mainPage.openApp();
     await mainPage.loginApp();
-    expect(await mainPage.isMainPageLoaded());
+    expect(await mainPage.isMainPageLoaded()).toBeTruthy();
     await mainPage.addProductCart("Sauce Labs Bike Light");
     await mainPage.addProductCart("Sauce Labs Onesie")
     await playVD.waitForTimeout(5000);
@@ -43,7 +43,7 @@ test.describe('Remove Cart', () => {
     const mainPage = new MainPage(playVD);
     await mainPage.openApp();
     await mainPage.loginApp();
-    expect(await mainPage.isMainPageLoaded());
+    expect(await mainPage.isMainPageLoaded()).toBeTruthy();
     await mainPage.addProductCart("Sauce Labs Backpack")
     await mainPage.addProductCart("Sauce Labs Bike Light");
     await playVD.waitForTimeout(5000);
