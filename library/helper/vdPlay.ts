@@ -1,4 +1,5 @@
 import { type Page, BrowserContext, expect, FrameLocator, Locator } from '@playwright/test';
+import { allure } from 'allure-playwright';
 
 export class PlayVD {
     private page: Page;
@@ -9,6 +10,10 @@ export class PlayVD {
         this.context = page.context();
     }
 
+    async log(message: string): Promise<this> {
+        allure.step(message, async () => {});
+        return this;
+    }
     async goto(url: string, options?: { waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' }): Promise<this> {
         await this.page.goto(url, options);
         return this;
@@ -28,7 +33,7 @@ export class PlayVD {
         await this.page.reload(options);
         return this;
     }
-    
+
     private getLocator(selector: string): Locator {
         return this.page.locator(selector);
     }
@@ -96,7 +101,7 @@ export class PlayVD {
         if (timeout <= 0) {
             throw new Error("Timeout must be a positive number");
         }
-        
+
         // Handle case when page is no longer active or the test has ended
         try {
             await this.page.waitForTimeout(timeout);
@@ -104,7 +109,7 @@ export class PlayVD {
             console.error("Error occurred during waitForTimeout:", error);
             throw new Error("Page or test ended during waitForTimeout");
         }
-        
+
         return this;
     }
 

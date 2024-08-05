@@ -9,15 +9,21 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['list'],
+    ['line'],
     ['allure-playwright', { outputFolder: 'report/allure/allure-results' }],
     ['html', { outputFolder: 'report/playwrightreport', open: 'never' }],
   ],
   use: {
+    acceptDownloads : true,
+    actionTimeout : 30 * 1000,
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
     headless: false,
+  },
+  timeout: 30 * 1000,
+  expect : {
+    timeout : 5000,
   },
 
   projects: [

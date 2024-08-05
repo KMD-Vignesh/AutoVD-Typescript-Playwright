@@ -21,5 +21,6 @@ export class MainPage extends LoginPage {
             this.playVD.click(productSelector);
         }
         await this.playVD.waitForTimeout(1000);
+        await this.playVD.log(`Product Added to Cart ${productName}`);
     }
 }

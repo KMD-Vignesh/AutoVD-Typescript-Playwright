@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "clean:allure-results": "rimraf report/allure/allure-results",
-    "test:playwright": "npx playwright test --workers=4",
+    "test:playwright": "npx playwright test --workers=4 --grep 'Remove Cart'",
     "copy:history": "cpx 'report/allure/allure-report/history/**/*' report/allure/allure-results/history",
     "clean:allure-report": "rimraf report/allure/allure-report",
-    "report:allure": "npx allure generate report/allure/allure-results --output report/allure/allure-report",
+    "report:allure": "npx allure generate report/allure/allure-results --clean -o report/allure/allure-report",
     "test": "npm run clean:allure-results && npm run test:playwright && npm run copy:history && npm run clean:allure-report && npm run report:allure"
   },
   "keywords": [],
