@@ -15,16 +15,16 @@ export default defineConfig({
   ],
   use: {
     acceptDownloads : true,
-    actionTimeout : 30 * 1000,
+    // actionTimeout : 30 * 1000,
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',
     headless: false,
   },
-  timeout: 30 * 1000,
-  expect : {
-    timeout : 5000,
-  },
+  // timeout: 30 * 1000,
+  // expect : {
+  //   timeout : 5000,
+  // },
 
   projects: [
     ...(browserMode === 'single' ? [
