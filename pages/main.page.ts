@@ -17,7 +17,7 @@ export class MainPage extends LoginPage {
 
     async addProductCart(productName: string) {
         const productSelector = `//div[text()='${productName}']/../../..//button`;
-        if (await this.playVD.isPresent(productSelector, 30)) {
+        if (await this.playVD.isPresent(productSelector)) {
             this.playVD.click(productSelector);
         }
         await this.playVD.waitForTimeout(1000);

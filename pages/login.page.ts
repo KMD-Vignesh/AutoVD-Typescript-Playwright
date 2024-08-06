@@ -16,8 +16,8 @@ export class LoginPage{
   }
 
   async loginApp() {
-    await this.playVD.fill(this.usernameInput, "standard_user")
-    await this.playVD.fill(this.passwordInput, "secret_sauce")
+    await this.playVD.type(this.usernameInput, "standard_user")
+    await this.playVD.type(this.passwordInput, "secret_sauce")
     await this.playVD.click(this.loginButton)
     return this
   }
