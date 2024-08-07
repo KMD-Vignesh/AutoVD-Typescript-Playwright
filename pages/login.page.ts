@@ -1,18 +1,13 @@
 import { PlayVD } from "../library/helper/vdPlay";
+import { PageBase } from "../library/interface/vdPage";
 
-export class LoginPage {
-  protected playVD: PlayVD;
+export class LoginPage extends PageBase{
   private usernameInput: string = "#user-name";
   private passwordInput: string = "#password";
   private loginButton: string = "#login-button";
 
   constructor(playVD: PlayVD) {
-    this.playVD = playVD;
-  }
-
-  async openApp() {
-    await this.playVD.goto("https://saucedemo.com", {waitUntil:'load'});
-    return this;
+    super(playVD);
   }
 
   async loginApp() {

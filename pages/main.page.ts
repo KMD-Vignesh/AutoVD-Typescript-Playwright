@@ -3,7 +3,7 @@ import { PlayVD } from "../library/helper/vdPlay";
 
 export class MainPage extends LoginPage {
   private mainPageHeader: string =
-    "//div[@class='header_label']/div[text()='Swag Labsstr']";
+    "//div[@class='header_label']/div[text()='Swag Labs']";
   private productCount: string = "//span[@class='shopping_cart_badge']";
 
   constructor(playVD: PlayVD) {
@@ -19,7 +19,7 @@ export class MainPage extends LoginPage {
     if (await this.playVD.isPresent(productSelector)) {
       this.playVD.click(productSelector);
     }
-    await this.playVD.waitForTimeout(1000);
+    await this.playVD.waitSeconds(1);
     await this.playVD.log(`Product Added to Cart ${productName}`);
   }
 }

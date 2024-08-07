@@ -1,6 +1,8 @@
 import {
   type Page,
   BrowserContext,
+  Dialog,
+  Download,
   expect,
   FrameLocator,
   Locator,
@@ -16,8 +18,59 @@ export class PlayVD {
     this.context = page.context();
   }
 
-  async log(message: string): Promise<this> {
-    allure.step(message, async () => {});
+  async getContext(): Promise<BrowserContext> {
+    return this.context;
+  }
+
+  async openNewTab(url?: string): Promise<PlayVD> {
+    const newPage = await this.context.newPage();
+    if (url) {
+      await newPage.goto(url);
+    }
+    return new PlayVD(newPage);
+  }
+
+  async clickForNewTab(selector: string): Promise<PlayVD> {
+    const [newPage] = await Promise.all([
+      this.context.waitForEvent("page"),
+      this.page.click(selector),
+    ]);
+    await newPage.waitForLoadState();
+    return new PlayVD(newPage);
+  }
+
+  async clickForDialog(selector: string): Promise<Dialog> {
+    const [dialog] = await Promise.all([
+      this.page.waitForEvent("dialog"),
+      this.page.click(selector),
+    ]);
+    this.log(dialog.message());
+    return dialog;
+  }
+
+  async clickForDownload(selector: string): Promise<Download> {
+    const [download] = await Promise.all([
+      this.page.waitForEvent("download"),
+      this.page.click(selector),
+    ]);
+    return download;
+  }
+
+
+  async waitForLoadState(): Promise<this> {
+    await this.page.waitForLoadState();
+    return this;
+  }
+
+  async bringToFront(): Promise<this> {
+    await this.page.bringToFront();
+    return this;
+  }
+
+  async log(message: string | null): Promise<this> {
+    const finalMessage = message ?? "null";
+    allure.step(finalMessage, async () => {});
+    console.log(finalMessage);
     return this;
   }
   async goto(
@@ -62,6 +115,10 @@ export class PlayVD {
     } catch {
       return false;
     }
+  }
+
+  async getText(selector: string): Promise<string | null> {
+    return await this.getLocator(selector).textContent();
   }
 
   // Interactions
@@ -121,7 +178,7 @@ export class PlayVD {
     return this;
   }
 
-  async waitForTimeout(timeout: number): Promise<this> {
+  async waitSeconds(timeout: number): Promise<this> {
     // Ensure timeout is a positive number
     if (timeout <= 0) {
       throw new Error("Timeout must be a positive number");
@@ -129,7 +186,7 @@ export class PlayVD {
 
     // Handle case when page is no longer active or the test has ended
     try {
-      await this.page.waitForTimeout(timeout);
+      await this.page.waitForTimeout(timeout * 1000);
     } catch (error) {
       console.error("Error occurred during waitForTimeout:", error);
       throw new Error("Page or test ended during waitForTimeout");
