@@ -26,6 +26,7 @@ export class PlayVD {
     const newPage = await this.context.newPage();
     if (url) {
       await newPage.goto(url);
+      await newPage.waitForLoadState();
     }
     return new PlayVD(newPage);
   }
@@ -179,12 +180,9 @@ export class PlayVD {
   }
 
   async waitSeconds(timeout: number): Promise<this> {
-    // Ensure timeout is a positive number
     if (timeout <= 0) {
       throw new Error("Timeout must be a positive number");
     }
-
-    // Handle case when page is no longer active or the test has ended
     try {
       await this.page.waitForTimeout(timeout * 1000);
     } catch (error) {
@@ -195,7 +193,6 @@ export class PlayVD {
     return this;
   }
 
-  // Content
   async title(): Promise<string> {
     return this.page.title();
   }
@@ -212,12 +209,10 @@ export class PlayVD {
     return this;
   }
 
-  // Frames
-  frame(selector: string): FrameLocator {
+  public frame(selector: string): FrameLocator {
     return this.page.frameLocator(selector);
   }
 
-  // Cookies
   async contextCookies(): Promise<any[]> {
     return this.page.context().cookies();
   }
@@ -240,19 +235,16 @@ export class PlayVD {
     return this;
   }
 
-  // URL
   async url(): Promise<string> {
     return this.page.url();
   }
 
-  // Accessibility
   async accessibilitySnapshot(options?: {
     interestingOnly?: boolean;
   }): Promise<any> {
     return this.page.accessibility.snapshot(options);
   }
 
-  // Others
   async setViewportSize(width: number, height: number): Promise<this> {
     await this.page.setViewportSize({ width, height });
     return this;
@@ -271,13 +263,11 @@ export class PlayVD {
     return this;
   }
 
-  // Add new page
   async newPage(): Promise<PlayVD> {
     const newPage = await this.context.newPage();
     return new PlayVD(newPage);
   }
 
-  // Add new tab
   async newTab(): Promise<PlayVD> {
     const [newTab] = await Promise.all([
       this.context.waitForEvent("page"),
@@ -286,7 +276,6 @@ export class PlayVD {
     return new PlayVD(newTab);
   }
 
-  // Switch to page
   async switchToPage(index: number): Promise<this> {
     const pages = this.context.pages();
     if (index < 0 || index >= pages.length) {

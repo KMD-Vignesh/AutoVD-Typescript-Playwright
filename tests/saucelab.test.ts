@@ -44,10 +44,11 @@ test.describe("Remove Cart", () => {
     expect(await mainPage.isMainPageLoaded()).toBe(true);
     await mainPage.addProductCart("Sauce Labs Backpack");
     await mainPage.addProductCart("Sauce Labs Bike Light");
-    const playVD2 = await playVD.openNewTab("https://demoqa.com/browser-windows");
+    const playVD2 = await playVD.openNewTab(
+      "https://demoqa.com/browser-windows"
+    );
     const playVD3 = await playVD2.clickForNewTab("#tabButton");
     await playVD.log(await playVD3.getText("#sampleHeading"));
     await playVD.waitSeconds(5);
-    
   });
 });
