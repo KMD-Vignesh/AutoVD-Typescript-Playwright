@@ -11,7 +11,7 @@ export class MainPage extends LoginPage {
   }
 
   async isMainPageLoaded() {
-    return this.playVD.isPresent(this.mainPageHeader, 5);
+    return await this.playVD.isPresent(this.mainPageHeader, 5);
   }
 
   async addProductCart(productName: string) {
