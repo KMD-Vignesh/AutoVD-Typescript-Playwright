@@ -15,11 +15,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.45.3",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^20.14.12",
     "allure-commandline": "^2.13.9",
     "allure-playwright": "^2.0.0",
     "cpx": "^1.5.0",
+    "playwright": "^1.61.1",
     "rimraf": "^6.0.1"
   }
 }
