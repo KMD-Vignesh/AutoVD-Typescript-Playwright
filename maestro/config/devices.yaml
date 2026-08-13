@@ -1,0 +1,25 @@
+# Device profiles for Maestro
+# Usage: maestro test flows/ --device <profile>
+
+devices:
+  android:
+    emulator: "Pixel_6_API_33"
+    app_id_env: ANDROID_APP_ID
+    notes: "Google Pixel 6, API 33"
+
+  android_tablet:
+    emulator: "Pixel_Tablet_API_33"
+    app_id_env: ANDROID_APP_ID
+    notes: "Tablet form factor"
+
+  ios_simulator:
+    simulator: "iPhone 15"
+    runtime: "iOS 17.5"
+    app_id_env: IOS_APP_ID
+    notes: "iOS simulator — no physical device support in open-source Maestro"
+
+  ios_real:
+    bridge: "maestro-ios-device"
+    port: 6001
+    app_id_env: IOS_APP_ID
+    notes: "Requires maestro-ios-device bridge + connected iPhone"

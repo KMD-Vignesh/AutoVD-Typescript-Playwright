@@ -1,6 +1,32 @@
+# ─── Node & npm ────────────────────────────────────────────────
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/report/
+package-lock.json
+
+# ─── Build output ──────────────────────────────────────────────
+dist/
+
+# ─── Test output ───────────────────────────────────────────────
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+report/
+
+# ─── Maestro output ────────────────────────────────────────────
+maestro/reports/
+maestro/scripts/.auth-token.json
+
+# ─── Environment & secrets ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

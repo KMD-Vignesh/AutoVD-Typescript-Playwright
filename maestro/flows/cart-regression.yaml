@@ -1,0 +1,33 @@
+appId: ${ANDROID_APP_ID}
+tags:
+  - regression
+  - cart
+---
+- launchApp
+
+# Add multiple products using subflow + loop
+- evalScript: |
+    output.products = [
+      "Wireless Headphones",
+      "USB-C Cable",
+      "Phone Case"
+    ];
+    output.index = 0;
+
+- repeat:
+    while:
+      true: ${output.index < output.products.length}
+    commands:
+      - runFlow:
+          file: subflows/add-to-cart.yaml
+          env:
+            PRODUCT_NAME: ${output.products[output.index]}
+      - evalScript: ${output.index++}
+
+# Verify cart
+- tapOn:
+    id: "cart_tab"
+- assertVisible: ".*3 items.*"
+- assertVisible:
+    text: ".*Total.*"
+- takeScreenshot: cart_with_3_items

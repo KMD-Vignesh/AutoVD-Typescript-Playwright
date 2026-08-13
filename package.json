@@ -9,7 +9,14 @@
     "copy:history": "cpx 'report/allure/allure-report/history/**/*' report/allure/allure-results/history",
     "clean:allure-report": "rimraf report/allure/allure-report",
     "report:allure": "npx allure generate report/allure/allure-results --clean -o report/allure/allure-report",
-    "test": "npm run clean:allure-results && npm run test:playwright && npm run copy:history && npm run clean:allure-report && npm run report:allure"
+    "test:web": "npm run clean:allure-results && npm run test:playwright && npm run copy:history && npm run clean:allure-report && npm run report:allure",
+    "test:api": "npx playwright test tests/api/ --reporter=line",
+    "test:mobile": "maestro test maestro/flows/ --parallel 3",
+    "test:mobile:ios": "maestro test maestro/flows/ --device ios",
+    "test:mobile:android": "maestro test maestro/flows/ --device android",
+    "test:mobile:all": "maestro test maestro/flows/ --shard-split 3",
+    "test:all": "npm run test:web && npm run test:api && npm run test:mobile",
+    "maestro:studio": "maestro studio"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +27,7 @@
     "allure-commandline": "^2.13.9",
     "allure-playwright": "^2.0.0",
     "cpx": "^1.5.0",
+    "dotenv": "^16.4.5",
     "playwright": "^1.61.1",
     "rimraf": "^6.0.1"
   }

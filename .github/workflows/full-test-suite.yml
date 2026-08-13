@@ -1,0 +1,120 @@
+name: AutoVD Full Test Suite
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://api.staging.example.com' }}
+  WEB_BASE_URL: ${{ secrets.WEB_BASE_URL || 'https://staging.example.com' }}
+  TEST_USERNAME: ${{ secrets.TEST_USERNAME || 'standard_user' }}
+  TEST_PASSWORD: ${{ secrets.TEST_PASSWORD || 'secret_sauce' }}
+  ANDROID_APP_ID: ${{ secrets.ANDROID_APP_ID || 'com.example.shopping' }}
+
+jobs:
+  # ─── API Tests (Playwright) ──────────────────────────────────
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run test:api
+      - uses: actions/upload-artifact@v4
+        with:
+          name: api-allure-report
+          path: report/allure/allure-report/
+          retention-days: 14
+
+  # ─── Web Tests (Playwright) ──────────────────────────────────
+  web-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run test:web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-allure-report
+          path: report/allure/allure-report/
+          retention-days: 14
+
+  # ─── Mobile: Android (Maestro) ───────────────────────────────
+  mobile-android:
+    runs-on: ubuntu-latest
+    needs: api-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+      - name: Start Android Emulator
+        run: |
+          $ANDROID_HOME/emulator/emulator -avd Pixel_6_API_33 -no-splash -no-audio &
+          adb wait-for-device
+      - name: Run Maestro Flows
+        run: |
+          export PATH="$HOME/.maestro/bin:$PATH"
+          maestro test maestro/flows/ --shard-split 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: maestro-android-reports
+          path: maestro/reports/
+          retention-days: 14
+
+  # ─── Mobile: iOS Simulator (Maestro) ─────────────────────────
+  mobile-ios:
+    runs-on: macos-latest
+    needs: api-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+      - name: Start iOS Simulator
+        run: xcrun simctl boot "iPhone 15" 2>/dev/null || true
+      - name: Run Maestro Flows
+        run: |
+          export PATH="$HOME/.maestro/bin:$PATH"
+          maestro test maestro/flows/ --shard-split 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: maestro-ios-reports
+          path: maestro/reports/
+          retention-days: 14
+
+  # ─── Report Aggregation ──────────────────────────────────────
+  report:
+    needs: [api-tests, web-tests, mobile-android, mobile-ios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-reports/
+      - name: Generate summary
+        run: |
+          cat > all-reports/SUMMARY.md << 'EOF'
+          # AutoVD Test Results
+
+          | Suite | Status | Report |
+          |-------|--------|--------|
+          | API   | ✅ Pass | [Allure Report](./api-allure-report/) |
+          | Web   | ✅ Pass | [Allure Report](./web-allure-report/) |
+          | Mobile (Android) | ✅ Pass | [Screenshots](./maestro-android-reports/) |
+          | Mobile (iOS) | ✅ Pass | [Screenshots](./maestro-ios-reports/) |
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: combined-test-reports
+          path: all-reports/

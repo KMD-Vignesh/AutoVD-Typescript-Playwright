@@ -1,0 +1,31 @@
+# Environment configurations for Maestro flows
+# Reference in flows via env: blocks or --env CLI flag
+
+environments:
+  qa:
+    app_url: https://qa.example.com
+    api_url: https://api.qa.example.com
+    android_app_id: com.example.shopping
+    ios_app_id: com.example.shopping
+    username: qa_user
+    password: qa_password123
+
+  staging:
+    app_url: https://staging.example.com
+    api_url: https://api.staging.example.com
+    android_app_id: com.example.shopping.staging
+    ios_app_id: com.example.shopping.staging
+    username: staging_user
+    password: staging_pass456
+
+  production:
+    app_url: https://example.com
+    api_url: https://api.example.com
+    android_app_id: com.example.shopping
+    ios_app_id: com.example.shopping
+    username: prod_user
+    password: prod_secret
+
+# How to use in CI:
+# maestro test maestro/flows/ --env QA
+# maestro test maestro/flows/ --env STAGING

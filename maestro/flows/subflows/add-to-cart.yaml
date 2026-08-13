@@ -1,0 +1,12 @@
+# Reusable subflow: add a product to cart by name
+- tapOn:
+    id: "products_tab"
+- tapOn:
+    text: ".*${PRODUCT_NAME}.*"
+- tapOn:
+    id: "add_to_cart_button"
+- assertVisible:
+    text: ".*added to cart.*"
+- tapOn:
+    text: ".*Back.*"
+    optional: true

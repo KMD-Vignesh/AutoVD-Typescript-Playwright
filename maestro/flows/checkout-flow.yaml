@@ -1,0 +1,49 @@
+appId: ${ANDROID_APP_ID}
+env:
+  USERNAME: ${TEST_USERNAME}
+  PASSWORD: ${TEST_PASSWORD}
+tags:
+  - regression
+  - checkout
+---
+- launchApp
+
+# Seed product data via API before UI interaction
+- runScript: seed-product.js
+
+# Navigate to products
+- tapOn:
+    id: "products_tab"
+- assertVisible:
+    text: ".*Products.*"
+
+# Add product to cart
+- runFlow:
+    file: subflows/add-to-cart.yaml
+    env:
+      PRODUCT_NAME: ${output.productName}
+
+# Go to cart and verify
+- tapOn:
+    id: "cart_tab"
+- assertVisible: ".*1 item.*"
+- tapOn: "Checkout"
+
+# Fill payment (using test card)
+- tapOn:
+    id: "card_number_input"
+- inputText: ${output.testCardNumber}
+- tapOn:
+    id: "expiry_input"
+- inputText: "12/28"
+- tapOn:
+    id: "cvv_input"
+- inputText: "123"
+- tapOn: "Pay Now"
+
+# Verify order confirmation
+- assertVisible:
+    text: ".*Order Confirmed.*"
+- assertVisible:
+    text: ".*#${output.orderId}.*"
+- takeScreenshot: order_confirmation

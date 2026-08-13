@@ -1,0 +1,46 @@
+appId: ${ANDROID_APP_ID}
+env:
+  USERNAME: ${TEST_USERNAME}
+  PASSWORD: ${TEST_PASSWORD}
+tags:
+  - smoke
+  - login
+---
+- launchApp:
+    clearState: true
+
+# Handle onboarding screens (optional — won't fail if absent)
+- runFlow:
+    when:
+      visible: "Welcome"
+    commands:
+      - tapOn: "Get Started"
+      - tapOn:
+          text: ".*Skip.*"
+          optional: true
+
+# Login flow
+- tapOn: "Sign In"
+- tapOn:
+    id: "email_input"
+- inputText: ${USERNAME}
+- tapOn:
+    id: "password_input"
+- inputText: ${PASSWORD}
+- tapOn:
+    id: "login_button"
+
+# Verify successful login
+- assertVisible:
+    text: ".*Dashboard.*"
+- assertVisible:
+    id: "user_avatar"
+- takeScreenshot: login_success
+
+# Navigate to profile to verify user identity
+- tapOn:
+    id: "profile_tab"
+- assertVisible:
+    text: ".*${USERNAME}.*"
+- takeScreenshot: profile_loaded
+- back
