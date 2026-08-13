@@ -1,6 +1,7 @@
 /**
- * P0 #3 (continued) — API Tests with Schema Validation
- * All existing API tests enhanced with Ajv schema checks.
+ * P0 #3 — API Tests with Schema Validation
+ * All API tests enhanced with Ajv schema checks.
+ * Skip automatically if API_BASE_URL not configured.
  */
 import { test, expect } from '../fixtures';
 import Ajv from 'ajv';
@@ -23,14 +24,13 @@ if (!hasApi) {
   console.warn('⚠️  API_BASE_URL not configured — API tests will be skipped. Set API_BASE_URL in .env');
 }
 
-test.describe('Auth API — with Schema Validation', () => {
-  if (!hasApi) {
-    test.skip('requires API_BASE_URL', () => {});
-  }
+// Wrap all API test suites in a conditional skip
+const apiSuite = hasApi ? test.describe : test.describe.skip;
+
+apiSuite('Auth API — with Schema Validation', () => {
   test.beforeEach(() => clearAuthCache());
 
   test('POST /auth/login returns valid token (schema validated)', async ({ request }) => {
-    // Validate request shape
     const validateRequest = ajv.compile(loginRequestSchema);
     const requestData = {
       username: process.env.TEST_USERNAME || 'standard_user',
@@ -82,7 +82,7 @@ test.describe('Auth API — with Schema Validation', () => {
   });
 });
 
-test.describe('Users API — with Schema Validation', () => {
+apiSuite('Users API — with Schema Validation', () => {
   test('GET /users returns paginated list (schema validated)', async ({ request }) => {
     const token = await getAuthToken(request);
     const response = await request.get(`${API_BASE}/users`, {
@@ -118,14 +118,13 @@ test.describe('Users API — with Schema Validation', () => {
     expect(validateUser(user)).toBe(true);
     expect(user.email).toContain('@example.com');
 
-    // Cleanup
     await request.delete(`${API_BASE}/users/${user.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   });
 });
 
-test.describe('Products API — with Schema Validation', () => {
+apiSuite('Products API — with Schema Validation', () => {
   test('GET /products returns array (schema validated)', async ({ request }) => {
     const token = await getAuthToken(request);
     const response = await request.get(`${API_BASE}/products`, {
@@ -146,7 +145,6 @@ test.describe('Products API — with Schema Validation', () => {
   test('GET /products/:id returns single product (schema validated)', async ({ request }) => {
     const token = await getAuthToken(request);
 
-    // Get first product ID
     const listRes = await request.get(`${API_BASE}/products`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -165,11 +163,10 @@ test.describe('Products API — with Schema Validation', () => {
   });
 });
 
-test.describe('Cart API — with Schema Validation', () => {
+apiSuite('Cart API — with Schema Validation', () => {
   test('POST /cart/add adds item (schema validated)', async ({ request }) => {
     const token = await getAuthToken(request);
 
-    // Get a product
     const products = await request
       .get(`${API_BASE}/products`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json());

@@ -1,5 +1,6 @@
 /**
  * P1 #5 (continued) — API Tests Using Factories
+ * Requires API_BASE_URL in .env
  */
 import { test, expect } from '../fixtures';
 import { UserFactory, ProductFactory, CartFactory } from '../factories';
@@ -11,10 +12,9 @@ if (!hasApi) {
   console.warn('⚠️  API_BASE_URL not configured — factory API tests will be skipped.');
 }
 
-test.describe('Factory-Based API Tests', () => {
-  if (!hasApi) {
-    test.skip('requires API_BASE_URL', () => {});
-  }
+const apiSuite = hasApi ? test.describe : test.describe.skip;
+
+apiSuite('Factory-Based API Tests', () => {
   test('UserFactory creates and cleans up user', async ({ request }) => {
     const user = await UserFactory.create(request, {
       firstName: 'Factory User',
@@ -58,11 +58,9 @@ test.describe('Factory-Based API Tests', () => {
     const token = await getAuthToken(request);
     const user = await UserFactory.create(request);
 
-    // Create products
     const p1 = await ProductFactory.create(request, { name: 'Headphones', price: 99 });
     const p2 = await ProductFactory.create(request, { name: 'Charger', price: 29 });
 
-    // Add to cart
     await request.post(`${process.env.API_BASE_URL}/cart/add`, {
       headers: { Authorization: `Bearer ${token}` },
       data: { productId: p1.product.id, quantity: 1 },
@@ -72,14 +70,12 @@ test.describe('Factory-Based API Tests', () => {
       data: { productId: p2.product.id, quantity: 2 },
     });
 
-    // Verify cart
     const cartRes = await request.get(`${process.env.API_BASE_URL}/cart`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const cart = await cartRes.json();
     expect(cart.total).toBeGreaterThan(0);
 
-    // Cleanup
     await user.cleanup();
     await p1.cleanup();
     await p2.cleanup();

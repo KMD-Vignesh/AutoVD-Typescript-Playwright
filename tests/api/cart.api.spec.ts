@@ -13,13 +13,11 @@ if (!hasApi) {
   console.warn('⚠️  API_BASE_URL not configured — API tests will be skipped.');
 }
 
+const apiSuite = hasApi ? test.describe : test.describe.skip;
+
 let authToken: string;
 
-test.describe('Products API', () => {
-  if (!hasApi) {
-    test.skip('requires API_BASE_URL', () => {});
-  }
-
+apiSuite('Products API', () => {
   test.beforeAll(async ({ request }) => {
     const res = await request.post(`${API_BASE}/auth/login`, {
       data: {
@@ -56,13 +54,8 @@ test.describe('Products API', () => {
   });
 });
 
-test.describe('Cart API', () => {
-  if (!hasApi) {
-    test.skip('requires API_BASE_URL', () => {});
-  }
-
+apiSuite('Cart API', () => {
   test('POST /cart/add adds item and returns 200', async ({ request }) => {
-    // Get a product
     const products = await request
       .get(`${API_BASE}/products`, { headers: { Authorization: `Bearer ${authToken}` } })
       .then((r) => r.json());
