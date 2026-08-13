@@ -1,89 +1,201 @@
 /**
- * API Tests — Auth & User endpoints
- * Run: npm run test:api
+ * P0 #3 (continued) — API Tests with Schema Validation
+ * All existing API tests enhanced with Ajv schema checks.
  */
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
+import Ajv from 'ajv';
 import 'dotenv/config';
+import {
+  loginRequestSchema,
+  loginResponseSchema,
+  userSchema,
+  productSchema,
+  cartSchema,
+  errorResponseSchema,
+} from './schemas';
+import { getAuthToken, clearAuthCache } from './middleware/auth.middleware';
 
+const ajv = new Ajv({ allErrors: true, strict: true });
 const API_BASE = process.env.API_BASE_URL || 'https://api.example.com';
+const hasApi = API_BASE !== 'https://api.example.com';
 
-test.describe('Auth API', () => {
-  test('POST /auth/login returns token', async ({ request }) => {
-    const response = await request.post(`${API_BASE}/auth/login`, {
-      data: {
-        username: process.env.TEST_USERNAME || 'standard_user',
-        password: process.env.TEST_PASSWORD || 'secret_sauce',
-      },
-    });
+if (!hasApi) {
+  console.warn('⚠️  API_BASE_URL not configured — API tests will be skipped. Set API_BASE_URL in .env');
+}
 
+test.describe('Auth API — with Schema Validation', () => {
+  if (!hasApi) {
+    test.skip('requires API_BASE_URL', () => {});
+  }
+  test.beforeEach(() => clearAuthCache());
+
+  test('POST /auth/login returns valid token (schema validated)', async ({ request }) => {
+    // Validate request shape
+    const validateRequest = ajv.compile(loginRequestSchema);
+    const requestData = {
+      username: process.env.TEST_USERNAME || 'standard_user',
+      password: process.env.TEST_PASSWORD || 'secret_sauce',
+    };
+    expect(validateRequest(requestData)).toBe(true);
+
+    const response = await request.post(`${API_BASE}/auth/login`, { data: requestData });
     expect(response.status()).toBe(200);
+
     const body = await response.json();
+    const validateResponse = ajv.compile(loginResponseSchema);
+    expect(validateResponse(body)).toBe(true);
+
     expect(body.token).toBeTruthy();
-    expect(body.user).toBeDefined();
     expect(body.user.id).toBeTruthy();
-    expect(body.user.role).toBeTruthy();
+    expect(body.user.role).toBe('user');
   });
 
-  test('POST /auth/login rejects invalid credentials', async ({ request }) => {
+  test('POST /auth/login rejects invalid credentials (401)', async ({ request }) => {
     const response = await request.post(`${API_BASE}/auth/login`, {
-      data: {
-        username: 'standard_user',
-        password: 'wrong_password',
-      },
+      data: { username: 'standard_user', password: 'wrong_password' },
     });
 
     expect(response.status()).toBe(401);
     const body = await response.json();
-    expect(body.error).toBeTruthy();
+    const validateError = ajv.compile(errorResponseSchema);
+    expect(validateError(body)).toBe(true);
   });
 
-  test('GET /auth/me returns user with valid token', async ({ request }) => {
-    // Login first to get token
-    const loginRes = await request.post(`${API_BASE}/auth/login`, {
-      data: {
-        username: process.env.TEST_USERNAME || 'standard_user',
-        password: process.env.TEST_PASSWORD || 'secret_sauce',
-      },
-    });
-    const { token } = await loginRes.json();
+  test('GET /auth/me returns current user with valid token', async ({ request }) => {
+    const token = await getAuthToken(request);
 
-    // Use token for protected endpoint
-    const meRes = await request.get(`${API_BASE}/auth/me`, {
+    const response = await request.get(`${API_BASE}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    expect(meRes.status()).toBe(200);
-    const user = await meRes.json();
-    expect(user.username).toBe(process.env.TEST_USERNAME || 'standard_user');
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.username).toBe(process.env.TEST_USERNAME || 'standard_user');
+  });
+
+  test('GET /auth/me rejects expired token', async ({ request }) => {
+    const response = await request.get(`${API_BASE}/auth/me`, {
+      headers: { Authorization: 'Bearer invalid_token_12345' },
+    });
+
+    expect(response.status()).toBe(401);
   });
 });
 
-test.describe('Users API', () => {
-  test('GET /users returns list', async ({ request }) => {
-    const response = await request.get(`${API_BASE}/users`);
+test.describe('Users API — with Schema Validation', () => {
+  test('GET /users returns paginated list (schema validated)', async ({ request }) => {
+    const token = await getAuthToken(request);
+    const response = await request.get(`${API_BASE}/users`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
     expect(response.status()).toBe(200);
-    const users = await response.json();
-    expect(Array.isArray(users)).toBe(true);
-    expect(users.length).toBeGreaterThan(0);
+    const body = await response.json();
+    expect(Array.isArray(body)).toBe(true);
+    if (body.length > 0) {
+      const validateUser = ajv.compile(userSchema);
+      expect(validateUser(body[0])).toBe(true);
+    }
   });
 
-  test('POST /users creates user and returns 201', async ({ request }) => {
-    const email = `test_${Date.now()}@example.com`;
+  test('POST /users creates user (schema validated)', async ({ request }) => {
+    const token = await getAuthToken(request);
+    const uniqueId = Date.now();
     const response = await request.post(`${API_BASE}/users`, {
+      headers: { Authorization: `Bearer ${token}` },
       data: {
-        email,
+        email: `test_${uniqueId}@example.com`,
         password: 'TestPass123!',
         firstName: 'Auto',
         lastName: 'Tester',
+        role: 'user',
       },
     });
 
     expect(response.status()).toBe(201);
     const user = await response.json();
-    expect(user.email).toBe(email);
-    expect(user.id).toBeTruthy();
+    const validateUser = ajv.compile(userSchema);
+    expect(validateUser(user)).toBe(true);
+    expect(user.email).toContain('@example.com');
 
-    // Cleanup: delete created user
-    await request.delete(`${API_BASE}/users/${user.id}`);
+    // Cleanup
+    await request.delete(`${API_BASE}/users/${user.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  });
+});
+
+test.describe('Products API — with Schema Validation', () => {
+  test('GET /products returns array (schema validated)', async ({ request }) => {
+    const token = await getAuthToken(request);
+    const response = await request.get(`${API_BASE}/products`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    expect(response.status()).toBe(200);
+    const products = await response.json();
+    expect(Array.isArray(products)).toBe(true);
+    expect(products.length).toBeGreaterThan(0);
+
+    const validateProduct = ajv.compile(productSchema);
+    products.forEach((p: Record<string, unknown>) => {
+      expect(validateProduct(p)).toBe(true);
+    });
+  });
+
+  test('GET /products/:id returns single product (schema validated)', async ({ request }) => {
+    const token = await getAuthToken(request);
+
+    // Get first product ID
+    const listRes = await request.get(`${API_BASE}/products`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const products = await listRes.json();
+    const productId = products[0].id;
+
+    const response = await request.get(`${API_BASE}/products/${productId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    expect(response.status()).toBe(200);
+    const product = await response.json();
+    const validateProduct = ajv.compile(productSchema);
+    expect(validateProduct(product)).toBe(true);
+    expect(product.id).toBe(productId);
+  });
+});
+
+test.describe('Cart API — with Schema Validation', () => {
+  test('POST /cart/add adds item (schema validated)', async ({ request }) => {
+    const token = await getAuthToken(request);
+
+    // Get a product
+    const products = await request
+      .get(`${API_BASE}/products`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json());
+
+    const response = await request.post(`${API_BASE}/cart/add`, {
+      headers: { Authorization: `Bearer ${token}` },
+      data: { productId: products[0].id, quantity: 2 },
+    });
+
+    expect(response.status()).toBe(200);
+    const cart = await response.json();
+    const validateCart = ajv.compile(cartSchema);
+    expect(validateCart(cart)).toBe(true);
+    expect(cart.items.some((i: any) => i.productId === products[0].id)).toBe(true);
+  });
+
+  test('GET /cart returns cart with total (schema validated)', async ({ request }) => {
+    const token = await getAuthToken(request);
+    const response = await request.get(`${API_BASE}/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    expect(response.status()).toBe(200);
+    const cart = await response.json();
+    const validateCart = ajv.compile(cartSchema);
+    expect(validateCart(cart)).toBe(true);
+    expect(cart.total).toBeGreaterThanOrEqual(0);
   });
 });

@@ -14,7 +14,7 @@ output.randomUser = {
 output.randomAddress = {
   street: `${Math.floor(Math.random() * 9999) + 1} Test Street`,
   city: 'Automation City',
-  zip: `${Math.floor(Math.random() * 90000) + 10000}`,
+  zip: `${Math.floor(Math.random() * 9000) + 10000}`,
 };
 
 output.randomProduct = {

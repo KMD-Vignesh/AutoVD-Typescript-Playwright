@@ -1,5 +1,5 @@
 import { test as base } from '@playwright/test';
-import { PlayVD } from '../../library/helper/vdPlay';
+import { PlayVD } from '../library/helper/vdPlay';
 
 /**
  * Shared fixtures for all test suites (web + API + mobile glue)

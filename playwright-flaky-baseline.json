@@ -1,0 +1,20 @@
+{
+  "baseline": {
+    "lastUpdated": "2025-01-14",
+    "totalTests": 55,
+    "expectedPassRate": 0.95,
+    "trackedFlakyTests": [
+      {
+        "file": "tests/web/saucelab.test.ts",
+        "test": "Remove Cart › remove cart 2",
+        "lastFailures": 1,
+        "status": "known-flaky",
+        "reason": "Multi-tab handling race condition — openNewTab + clickForNewTab timing",
+        "workaround": "Add explicit waitForTimeout between tab operations"
+      }
+    ],
+    "passRateHistory": [
+      { "date": "2025-01-14", "rate": 0.96, "total": 55, "passed": 53, "failed": 2 }
+    ]
+  }
+}

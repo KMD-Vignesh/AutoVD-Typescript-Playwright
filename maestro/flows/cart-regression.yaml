@@ -5,7 +5,7 @@ tags:
 ---
 - launchApp
 
-# Add multiple products using subflow + loop
+# Add multiple products using loop + subflow
 - evalScript: |
     output.products = [
       "Wireless Headphones",

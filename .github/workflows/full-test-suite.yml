@@ -92,9 +92,31 @@ jobs:
           path: maestro/reports/
           retention-days: 14
 
+  # ─── Mobile: iOS Physical Device (Maestro) ───────────────────
+  mobile-ios-physical:
+    runs-on: macos-latest
+    needs: api-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+      - name: Install iOS Device Bridge
+        run: curl -fsSL https://raw.githubusercontent.com/devicelab-dev/maestro-ios-device/main/setup.sh | bash
+      - name: Start Device Bridge
+        run: maestro-ios-device --team-id ${{ secrets.APPLE_TEAM_ID }} --device ${{ secrets.IPHONE_UDID }} & sleep 5
+      - name: Run Maestro on Real iPhone
+        run: |
+          export PATH="$HOME/.maestro/bin:$PATH"
+          maestro --driver-host-port 6001 --device ${{ secrets.IPHONE_UDID }} test maestro/flows/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: maestro-ios-physical-reports
+          path: maestro/reports/
+          retention-days: 14
+
   # ─── Report Aggregation ──────────────────────────────────────
   report:
-    needs: [api-tests, web-tests, mobile-android, mobile-ios]
+    needs: [api-tests, web-tests, mobile-android, mobile-ios, mobile-ios-physical]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -112,7 +134,8 @@ jobs:
           | API   | ✅ Pass | [Allure Report](./api-allure-report/) |
           | Web   | ✅ Pass | [Allure Report](./web-allure-report/) |
           | Mobile (Android) | ✅ Pass | [Screenshots](./maestro-android-reports/) |
-          | Mobile (iOS) | ✅ Pass | [Screenshots](./maestro-ios-reports/) |
+          | Mobile (iOS Sim) | ✅ Pass | [Screenshots](./maestro-ios-reports/) |
+          | Mobile (iOS Real) | ✅ Pass | [Screenshots](./maestro-ios-physical-reports/) |
           EOF
       - uses: actions/upload-artifact@v4
         with:

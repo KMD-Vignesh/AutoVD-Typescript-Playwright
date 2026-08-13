@@ -9,7 +9,7 @@ tags:
 - launchApp:
     clearState: true
 
-# Handle onboarding screens (optional — won't fail if absent)
+# Handle onboarding (optional — won't fail if absent)
 - runFlow:
     when:
       visible: "Welcome"
@@ -20,7 +20,6 @@ tags:
           optional: true
 
 # Login flow
-- tapOn: "Sign In"
 - tapOn:
     id: "email_input"
 - inputText: ${USERNAME}
