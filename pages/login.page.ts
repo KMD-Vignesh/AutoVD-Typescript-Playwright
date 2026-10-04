@@ -1,4 +1,5 @@
 import { PlayVD } from "../library/helper/vdPlay";
+import { env } from "../library/config/env";
 import { PageBase } from "../library/interface/vdPage";
 
 export class LoginPage extends PageBase{
@@ -11,8 +12,8 @@ export class LoginPage extends PageBase{
   }
 
   async loginApp() {
-    await this.playVD.type(this.usernameInput, "standard_user");
-    await this.playVD.type(this.passwordInput, "secret_sauce");
+    await this.playVD.type(this.usernameInput, env.username);
+    await this.playVD.type(this.passwordInput, env.password);
     await this.playVD.click(this.loginButton);
     return this;
   }

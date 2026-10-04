@@ -1,7 +1,7 @@
-import { LoginPage } from "./login.page";
+import { PageBase } from "../library/interface/vdPage";
 import { PlayVD } from "../library/helper/vdPlay";
 
-export class MainPage extends LoginPage {
+export class MainPage extends PageBase {
   private mainPageHeader: string =
     "//div[@class='header_label']/div[text()='Swag Labs']";
   private productCount: string = "//span[@class='shopping_cart_badge']";

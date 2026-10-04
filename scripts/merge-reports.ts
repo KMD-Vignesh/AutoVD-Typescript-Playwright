@@ -32,6 +32,11 @@ function copyRecursive(src: string, dest: string) {
 
 function generateSummary(allureExists: boolean, maestroExists: boolean): string {
   const date = new Date().toISOString().split('T')[0];
+  const webIcon = allureExists ? '✅' : '⏭️';
+  const mobileIcon = maestroExists ? '✅' : '⏭️';
+  const badge = (ok: boolean) =>
+    ok ? '<span class="pass">✅ Generated</span>'
+      : '<span class="skip">⏭️ Pending</span>';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,17 +44,27 @@ function generateSummary(allureExists: boolean, maestroExists: boolean): string 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AutoVD Unified Test Report</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; background: #f5f5f5; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 900px; margin: 40px auto; padding: 20px; background: #f5f5f5;
+    }
     h1 { color: #1a1a2e; border-bottom: 3px solid #16213e; padding-bottom: 10px; }
-    .summary { background: white; border-radius: 8px; padding: 24px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .summary {
+      background: white; border-radius: 8px;
+      padding: 24px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
     .metric { display: inline-block; margin: 10px 20px; text-align: center; }
     .metric .number { font-size: 36px; font-weight: bold; color: #16213e; }
     .metric .label { font-size: 14px; color: #666; }
     .pass { color: #27ae60; }
     .fail { color: #e74c3c; }
     .skip { color: #f39c12; }
-    a { display: block; padding: 16px; margin: 8px 0; background: white; border-radius: 8px; text-decoration: none; color: #1a1a2e; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    a {
+      display: block; padding: 16px; margin: 8px 0; background: white;
+      border-radius: 8px; text-decoration: none; color: #1a1a2e;
+    }
     a:hover { transform: translateX(4px); }
+    a.disabled { opacity: 0.5; pointer-events: none; }
     .section-title { font-size: 18px; font-weight: 600; margin: 24px 0 12px; color: #16213e; }
     footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; }
   </style>
@@ -64,7 +79,7 @@ function generateSummary(allureExists: boolean, maestroExists: boolean): string 
       <div class="label">Test Coverage</div>
     </div>
     <div class="metric">
-      <div class="number">${allureExists ? '✅' : '⏭️'} ${maestroExists ? '✅' : '⏭️'}</div>
+      <div class="number">${webIcon} ${mobileIcon}</div>
       <div class="label">Results Available</div>
     </div>
   </div>
@@ -73,12 +88,12 @@ function generateSummary(allureExists: boolean, maestroExists: boolean): string 
 
   ${allureExists
     ? `<a href="allure/index.html">📈 Playwright Allure Report — Web & API Tests</a>`
-    : `<a href="#" style="opacity:0.5;pointer-events:none;">📈 Playwright Allure Report — No results yet (run: npm run test:web && npm run test:api)</a>`
+    : `<a href="#" class="disabled">📈 Playwright Report — No results yet</a>`
   }
 
   ${maestroExists
     ? `<a href="maestro/screenshots/">📱 Maestro Mobile Reports — Screenshots & Videos</a>`
-    : `<a href="#" style="opacity:0.5;pointer-events:none;">📱 Maestro Mobile Reports — No results yet (run: maestro test maestro/flows/)</a>`
+    : `<a href="#" class="disabled">📱 Maestro Report — No results yet</a>`
   }
 
   <div class="section-title">🧪 Test Layers</div>
@@ -87,17 +102,17 @@ function generateSummary(allureExists: boolean, maestroExists: boolean): string 
       <tr style="border-bottom: 1px solid #eee;">
         <td style="padding: 8px 0;"><strong>Web E2E</strong></td>
         <td style="text-align:right;">Playwright + Allure</td>
-        <td style="text-align:right;">${allureExists ? '<span class="pass">✅ Generated</span>' : '<span class="skip">⏭️ Pending</span>'}</td>
+        <td style="text-align:right;">${badge(allureExists)}</td>
       </tr>
       <tr style="border-bottom: 1px solid #eee;">
         <td style="padding: 8px 0;"><strong>API Tests</strong></td>
         <td style="text-align:right;">Playwright + Ajv Schema</td>
-        <td style="text-align:right;">${allureExists ? '<span class="pass">✅ Generated</span>' : '<span class="skip">⏭️ Pending</span>'}</td>
+        <td style="text-align:right;">${badge(allureExists)}</td}
       </tr>
       <tr>
         <td style="padding: 8px 0;"><strong>Mobile E2E</strong></td>
         <td style="text-align:right;">Maestro YAML Flows</td>
-        <td style="text-align:right;">${maestroExists ? '<span class="pass">✅ Generated</span>' : '<span class="skip">⏭️ Pending</span>'}</td>
+        <td style="text-align:right;">${badge(maestroExists)}</td>
       </tr>
     </table>
   </div>

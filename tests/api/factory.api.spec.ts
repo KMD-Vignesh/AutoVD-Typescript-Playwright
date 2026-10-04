@@ -5,8 +5,9 @@
 import { test, expect } from '../fixtures';
 import { UserFactory, ProductFactory, CartFactory } from '../factories';
 import { getAuthToken } from './middleware/auth.middleware';
+import { env, hasApi } from '../../library/config/env';
 
-const hasApi = process.env.API_BASE_URL && process.env.API_BASE_URL !== 'https://api.example.com';
+const API_BASE = env.apiBaseUrl;
 
 if (!hasApi) {
   console.warn('⚠️  API_BASE_URL not configured — factory API tests will be skipped.');
@@ -61,16 +62,16 @@ apiSuite('Factory-Based API Tests', () => {
     const p1 = await ProductFactory.create(request, { name: 'Headphones', price: 99 });
     const p2 = await ProductFactory.create(request, { name: 'Charger', price: 29 });
 
-    await request.post(`${process.env.API_BASE_URL}/cart/add`, {
+    await request.post(`${API_BASE}/cart/add`, {
       headers: { Authorization: `Bearer ${token}` },
       data: { productId: p1.product.id, quantity: 1 },
     });
-    await request.post(`${process.env.API_BASE_URL}/cart/add`, {
+    await request.post(`${API_BASE}/cart/add`, {
       headers: { Authorization: `Bearer ${token}` },
       data: { productId: p2.product.id, quantity: 2 },
     });
 
-    const cartRes = await request.get(`${process.env.API_BASE_URL}/cart`, {
+    const cartRes = await request.get(`${API_BASE}/cart`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const cart = await cartRes.json();

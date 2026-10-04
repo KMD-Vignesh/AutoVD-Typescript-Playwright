@@ -3,7 +3,7 @@
  * JSON Schema definitions for all API responses.
  */
 
-// ─── Auth Schemas ─────────────────────────────────────────────
+// ─── Auth Schemas ───
 export const loginRequestSchema = {
   type: 'object',
   required: ['username', 'password'],
@@ -80,7 +80,7 @@ export const cartSchema = {
   },
 };
 
-// ─── Order Schemas ────────────────────────────────────────────
+// ─── Order Schemas ───
 export const orderSchema = {
   type: 'object',
   required: ['orderId', 'status', 'items', 'total'],

@@ -53,13 +53,13 @@ function checkBaseline(results: CurrentResults): { ok: boolean; messages: string
 
   // 1. Check pass rate against baseline
   const passRate = calculatePassRate(results);
+  const passPct = ((passRate * 100).toFixed(1)) + '%';
+  const basePct = ((baseline.expectedPassRate * 100).toFixed(1)) + '%';
   if (passRate < baseline.expectedPassRate) {
     ok = false;
-    messages.push(
-      `❌ Pass rate ${((passRate * 100).toFixed(1))}% is below baseline ${((baseline.expectedPassRate * 100).toFixed(1))}%`,
-    );
+    messages.push(`❌ Pass rate ${passPct} is below baseline ${basePct}`);
   } else {
-    messages.push(`✅ Pass rate ${((passRate * 100).toFixed(1))}% meets baseline ${((baseline.expectedPassRate * 100).toFixed(1))}%`);
+    messages.push(`✅ Pass rate ${passPct} meets baseline ${basePct}`);
   }
 
   // 2. Check for new flaky tests
@@ -117,7 +117,7 @@ Usage:
 
 Examples:
   node scripts/check-baseline.js --passed 50 --failed 2 --skipped 3 --total 55
-  npm run test:check-baseline -- --passed $(grep -c '"status":"passed"' report.json) --failed $(grep -c '"status":"failed"' report.json)
+  npm run test:check-baseline -- --passed 50 --failed 2 --total 55
 `);
   process.exit(0);
 }

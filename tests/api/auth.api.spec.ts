@@ -15,13 +15,15 @@ import {
   errorResponseSchema,
 } from './schemas';
 import { getAuthToken, clearAuthCache } from './middleware/auth.middleware';
+import { env, hasApi } from '../../library/config/env';
 
 const ajv = new Ajv({ allErrors: true, strict: true });
-const API_BASE = process.env.API_BASE_URL || 'https://api.example.com';
-const hasApi = API_BASE !== 'https://api.example.com';
+const API_BASE = env.apiBaseUrl;
 
 if (!hasApi) {
-  console.warn('⚠️  API_BASE_URL not configured — API tests will be skipped. Set API_BASE_URL in .env');
+  console.warn(
+    '⚠️  API_BASE_URL not configured — API tests will be skipped.',
+  );
 }
 
 // Wrap all API test suites in a conditional skip
@@ -33,8 +35,8 @@ apiSuite('Auth API — with Schema Validation', () => {
   test('POST /auth/login returns valid token (schema validated)', async ({ request }) => {
     const validateRequest = ajv.compile(loginRequestSchema);
     const requestData = {
-      username: process.env.TEST_USERNAME || 'standard_user',
-      password: process.env.TEST_PASSWORD || 'secret_sauce',
+      username: env.username,
+      password: env.password,
     };
     expect(validateRequest(requestData)).toBe(true);
 
@@ -70,7 +72,7 @@ apiSuite('Auth API — with Schema Validation', () => {
 
     expect(response.status()).toBe(200);
     const body = await response.json();
-    expect(body.username).toBe(process.env.TEST_USERNAME || 'standard_user');
+    expect(body.username).toBe(env.username);
   });
 
   test('GET /auth/me rejects expired token', async ({ request }) => {

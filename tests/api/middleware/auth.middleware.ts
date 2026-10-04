@@ -3,9 +3,9 @@
  * Token caching with automatic refresh before expiry.
  */
 import { APIRequestContext } from '@playwright/test';
-import 'dotenv/config';
+import { env } from '../../../library/config/env';
 
-const API_BASE = process.env.API_BASE_URL || 'https://api.example.com';
+const API_BASE = env.apiBaseUrl;
 
 interface CachedToken {
   token: string;
@@ -23,10 +23,7 @@ export async function getAuthToken(request: APIRequestContext): Promise<string> 
   }
 
   const response = await request.post(`${API_BASE}/auth/login`, {
-    data: {
-      username: process.env.TEST_USERNAME || 'standard_user',
-      password: process.env.TEST_PASSWORD || 'secret_sauce',
-    },
+    data: { username: env.username, password: env.password },
   });
 
   if (response.status() !== 200) {
@@ -50,17 +47,18 @@ export async function getAuthResponse(request: APIRequestContext): Promise<{
   expiresIn: number;
 }> {
   const response = await request.post(`${API_BASE}/auth/login`, {
-    data: {
-      username: process.env.TEST_USERNAME || 'standard_user',
-      password: process.env.TEST_PASSWORD || 'secret_sauce',
-    },
+    data: { username: env.username, password: env.password },
   });
 
   if (response.status() !== 200) {
     throw new Error(`Auth login failed: ${response.status()}`);
   }
 
-  return response.json() as Promise<{ token: string; user: Record<string, unknown>; expiresIn: number }>;
+  return response.json() as Promise<{
+    token: string;
+    user: Record<string, unknown>;
+    expiresIn: number;
+  }>;
 }
 
 export function clearAuthCache(): void {
