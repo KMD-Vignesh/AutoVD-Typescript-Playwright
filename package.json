@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean:allure-results": "rimraf report/allure/allure-results",
-    "test:playwright": "npx playwright test --workers=4 --grep 'Remove Cart'",
+    "test:playwright": "npx playwright test tests/web/ --workers=4",
     "copy:history": "cpx 'report/allure/allure-report/history/**/*' report/allure/allure-results/history",
     "clean:allure-report": "rimraf report/allure/allure-report",
     "report:allure": "npx allure generate report/allure/allure-results --clean -o report/allure/allure-report",
