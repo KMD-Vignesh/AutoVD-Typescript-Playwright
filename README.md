@@ -18,7 +18,7 @@ Playwright · TypeScript · Maestro · Allure · Accessibility &amp; visual chec
 
 <div>
 
-<img src="https://img.shields.io/badge/Vignesh&nbsp;D,&nbsp;QA&nbsp;Lead&nbsp;/&nbsp;Architect,Chennai,India-B2C6DB?style=for-the-badge" alt="Vignesh">
+<img src="https://img.shields.io/badge/Vignesh&nbsp;D,&nbsp;QA&nbsp;Lead/Architect,&nbsp;Chennai,India-B2C6DB?style=for-the-badge" alt="Vignesh">
 
 <p>
     <a href="https://www.linkedin.com/in/kmd-vignesh/"><img src="https://img.shields.io/badge/LinkedIn-0A75AD?style=for-the-badge" alt="LinkedIn"></a>
