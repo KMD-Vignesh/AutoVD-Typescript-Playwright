@@ -15,21 +15,17 @@ Playwright · TypeScript · Maestro · Allure · Accessibility &amp; visual chec
 
 </div>
 
-<div align="center">
+## Intro
 
-<h3>Vignesh D</h3>
+<div>
 
-<p><strong>Senior Software Quality Analyst</strong><br>Chennai, India</p>
-
-<p>
-  <a href="https://www.linkedin.com/in/kmd-vignesh/"><img src="https://img.shields.io/badge/LinkedIn-Vignesh%20D-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
-  <a href="https://github.com/KMD-Vignesh"><img src="https://img.shields.io/badge/GitHub-KMD--Vignesh-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
-</p>
+<img src="https://img.shields.io/badge/Vignesh&nbsp;D,&nbsp;QA&nbsp;Lead&nbsp;/&nbsp;Architect,Chennai,India-B2C6DB?style=for-the-badge" alt="Vignesh">
 
 <p>
-  <a href="mailto:KMD.Vignesh@outlook.com">KMD.Vignesh@outlook.com</a>
-  &nbsp;·&nbsp;
-  <a href="mailto:VigneshDhakshnamoorthy@gmail.com">VigneshDhakshnamoorthy@gmail.com</a>
+    <a href="https://www.linkedin.com/in/kmd-vignesh/"><img src="https://img.shields.io/badge/LinkedIn-0A75AD?style=for-the-badge" alt="LinkedIn"></a>
+    <a href="https://github.com/KMD-Vignesh"><img src="https://img.shields.io/badge/GitHub-FF6A80?style=for-the-badge" alt="GitHub"></a>
+    <a href="mailto:KMD.Vignesh@outlook.com"><img src="https://img.shields.io/badge/KMD.Vignesh@Outlook-2a9d8f?style=for-the-badge" alt="Email"></a>
+
 </p>
 
 </div>
