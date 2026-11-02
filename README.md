@@ -9,7 +9,6 @@ Playwright · TypeScript · Maestro · Allure · Accessibility &amp; visual chec
   <a href="https://github.com/KMD-Vignesh/AutoVD-Typescript-Playwright"><img src="https://img.shields.io/badge/Node-20%2B-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node 20+"></a>
   <a href="https://github.com/KMD-Vignesh/AutoVD-Typescript-Playwright"><img src="https://img.shields.io/badge/Playwright-1.61-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" alt="Playwright 1.61"></a>
   <a href="https://github.com/KMD-Vignesh/AutoVD-Typescript-Playwright"><img src="https://img.shields.io/badge/Allure-Report-FF6A00?style=for-the-badge" alt="Allure"></a>
-  <a href="https://github.com/KMD-Vignesh/AutoVD-Typescript-Playwright/actions/workflows/full-test-suite.yml"><img src="https://github.com/KMD-Vignesh/AutoVD-Typescript-Playwright/actions/workflows/full-test-suite.yml/badge.svg" alt="Full Test Suite"></a>
   <a href="https://github.com/KMD-Vignesh/AutoVD-Typescript-Playwright/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-2EA44F?style=for-the-badge" alt="MIT License"></a>
 </p>
 
